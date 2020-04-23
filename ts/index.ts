@@ -17,7 +17,7 @@ import {KBBot, KBResponse, KBMessage} from "@elijahjcobb/keybase-bot-builder";
 // 	"Library Bus Stop"
 // ];
 //
-// // Husky Campus Nightly
+// // Husky Campus Nightlye
 // const black: string[] = [
 // 	"MUB",
 // 	"SDC",

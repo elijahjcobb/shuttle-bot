@@ -10,6 +10,7 @@
 		"dts"
 	],
 	"scripts": {
+		"make": "tsc index.ts",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"prepublishOnly": "npm run compile",
 		"compile": "npm run clean && C:\\Users\\jacob\\Documents\\GIthub projects\\shuttle-bot -p tsconfig.json",

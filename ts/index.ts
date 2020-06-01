@@ -3,197 +3,110 @@
  * zongd@mtu.edu
  */
 
-import {BusRoute, getBusRouteForInput, getBusRouteNames, getOperationDay, getOperationHour, getStopsFromBusRoute,containStop} from "./BusSchedules";
+import {
+	BusRoute,
+	getBusRouteForInput,
+	getBusRouteNames,
+	getOperationDay,
+	getOperationHour,
+	getStopsFromBusRoute,
+	containStop
+} from "./BusSchedules";
 import {KBBot, KBResponse, KBMessage} from "@elijahjcobb/keybase-bot-builder";
-import {stringify} from "querystring";
 import * as Path from "path";
 import * as FS from "fs";
 
-// //  Husky Campus Shuttle Daily
-// const yellow: string[] = [
-// 	"Forestry Building (Lot 21/26 Sidewalk)",
-// 	"Forestry Building 9Rear Parking Lot)",
-// 	"SDC Main Doors",
-// 	"Gates Tennis Center Front Door",
-// 	"Lot 32 (St. AL's)",
-// 	"Woodland (Behind Wads)",
-// 	"Library Bus Stop"
-// ];
-//
-// // Husky Campus Nightlye
-// const black: string[] = [
-// 	"MUB",
-// 	"SDC",
-// 	"Upper Heights",
-// 	"Lower Heights <Stop Sign)",
-// 	"Woodland (behind Wads)",
-// 	"Library"
-// ];
-//
-// // Daniell Heights Shuttle
-// const red: string[] = [
-// 	"MUB",
-// 	"SDC",
-// 	"Upper Heights",
-// 	"Lower Heights",
-// 	"Library"
-// ];
-//
-// // City Commuter
-// const green: string[] = [
-// 	"MUB",
-// 	"City Center",
-// 	"Econo Foods",
-// 	"Walmart",
-// 	"Razorback Stop",
-// 	"Houghton Ave & 4th Street",
-// 	"Houghton Ave & Bridge Street",
-// 	"Houghton County Courthouse",
-// 	"Houghton Ave & Portage Street",
-// 	"Houghton Ave & Franklin Street",
-// 	"Houghton Ave & Agate Street",
-// 	"Houghton Ave & Emerald Street",
-// 	"MUB"
-// ];
-//
-// // Shopping Shuttle
-// const blue: string[] = [
-// 	"Upper Heights",
-// 	"Lower Heights",
-// 	"Behind Wads",
-// 	"Library",
-// 	"MUB",
-// 	"Econo",
-// 	"Walmart"
-// ];
-//
-// /**
-//  * get stopName print route names that goes through the stop
-//  * @param stop
-//  */
-// function getRouteName(stop: string): string {
-// 	return "no output";
-// }
-//
-// /**
-//  * get route number return full route
-//  * @param route
-//  */
-// function getRoute(route: number): string {
-// 	switch (route) {
-// 		case 0: {   //  Campus daily
-// 			return getEachStop(yellow);
-// 		}
-// 		case 1: {   // Campus nightly
-// 			return getEachStop(black);
-// 		}
-// 		case 2: {   // Daniell Heights
-// 			return getEachStop(red);
-// 		}
-// 		case 3: {   //  City Commuter
-// 			return getEachStop(green);
-// 		}
-// 		case 4: {   // Shopping shuttle
-// 			return getEachStop(blue);
-// 		}
-// 		default: {
-// 			return "Error for getRoute\n";
-// 		}
-// 	}
-// }
-
-// /**
-//  * get all station names for the route
-//  * @param route
-//  */
-// function getEachStop(route: string[]): string {
-// 	const output: string = "";
-// 	for (let i: number = 0; i < route.length; i++) {
-// 		output.concat(route[i]);
-// 		output.concat(" ");
-// 	}
-// 	return output;
-// }
-
-function nameOfDay(input:number): string
-{
-	switch(input)
-	{
-		case 1: {return "Monday";}
-		case 2: {return "Tuesday";}
-		case 3: {return "Wednesday";}
-		case 4: {return "Thursday";}
-		case 5: {return "Friday";}
-		case 6: {return "Saturday";}
-		case 7: {return "Sunday";}
-		default:{return "everyday";}
+function nameOfDay(input: number): string {
+	switch (input) {
+		case 1: {
+			return "Monday";
+		}
+		case 2: {
+			return "Tuesday";
+		}
+		case 3: {
+			return "Wednesday";
+		}
+		case 4: {
+			return "Thursday";
+		}
+		case 5: {
+			return "Friday";
+		}
+		case 6: {
+			return "Saturday";
+		}
+		case 7: {
+			return "Sunday";
+		}
+		default: {
+			return "everyday";
+		}
 
 	}
 }
-function dontTrackThatRoute(): string
-{
+
+function dontTrackThatRoute(): string {
 	return "Whoops! I don't track that route. I track the following routes: " +
-		getBusRouteNames().join("--> ") + ".\n"+printHelp(false)
+		getBusRouteNames().join("--> ") + ".\n" + printHelp(false);
 }
-function routeExist(line:string):boolean
-{
+
+function routeExist(line: string): boolean {
 	const route: BusRoute | undefined = getBusRouteForInput(line);	//get BusRoute associated with line
-	if(!route)
-	{
+	if (!route) {
 		return false;	// no route
-	} else
+	} else {
 		return true;
+	}
 
 }
+
 /**
  * return route of the line
- * @param line
+ * @param routeName The name of the route.
  */
-function getStops(routeName:string): string
-{
+function getStops(routeName: string): string {
 	const route: BusRoute | undefined = getBusRouteForInput(routeName);	// get BusRoute associated with line
 
-	if(routeExist(routeName))
-	{
+	if (routeExist(routeName)) {
 		// @ts-ignore
-		return ("The route "+ routeName +" goes through the following stops: \n"+getStopsFromBusRoute(route).join("-->")+ ".");
-	} else
+		return ("The route " + routeName + " goes through the following stops: \n" + getStopsFromBusRoute(route).join("-->") + ".");
+	} else {
 		return dontTrackThatRoute();
+	}
 }
 
 /**
  * array of BusRoute containing the specified stop
  * @param stop
  */
-function routesToStop(stop:string): string[] | undefined
-{
+function routesToStop(stop: string): string[] | undefined {
 	let i: number;
-	let answer:string[] = [];
-	let routes = getBusRouteNames();	// string of route names
+	let answer: string[] = [];
+	const routes: string[] = getBusRouteNames();	// string of route names
 
-	for(i = 0; i< routes.length; i++)
-	{
-		if(containStop(getBusRouteForInput(routes[i]),stop))
-		{
+	for (i = 0; i < routes.length; i++) {
+		if (containStop(getBusRouteForInput(routes[i]), stop)) {
 			console.log("there are routes contain stop " + stop);
 			console.log(routes[i]);
 			// @ts-ignore
 			answer = answer.concat(routes[i]);
 		}
 	}
-	console.log("array of BusRoute for routeToStop:"+answer);
+	console.log("array of BusRoute for routeToStop:" + answer);
 
-	if(answer===[])
+	if (answer === []) {
 		return undefined;
-	else
+	} else {
 		return answer;
+	}
 }
+
 /**
  * checks to see which routes stop by the stop
  * @param stop
  */
-function routeFromStop(stop:string): string
-{
+function routeFromStop(stop: string): string {
 	// let i: number;
 	// let answer:string =" ";
 	// let routes = getBusRouteNames();
@@ -204,63 +117,55 @@ function routeFromStop(stop:string): string
 	// 		answer.concat(routes[i]+", ");
 	// 	}
 	// }
-	let answer:string | undefined;
-	answer = routesToStop(stop)?.join(", ")
-	console.log("routeFromStop "+answer);
-	if(answer===undefined)	// no match, undefined
-	{
-		return "No routes passes through stop " + stop +"\n"+printHelp(false);
-	} else
-		return "The following route(s) pass through stop " + stop +":\n"+ answer;
+
+	const answer: string | undefined = routesToStop(stop)?.join(", ");
+	if (answer === undefined) return "No routes passes through stop " + stop + "\n" + printHelp(false);
+	else return "The following route(s) pass through stop " + stop + ":\n" + answer;
+
 }
 
 /**
  * return operation days in a week and time duration
  * @param line
  */
-function busHour(line:string): string
-{
+function busHour(line: string): string {
 	const route: BusRoute | undefined = getBusRouteForInput(line);	// get BusRoute associated with line
 
-	if(routeExist(line))	// path exist
+	if (routeExist(line))	// path exist
 	{
-		let i:number;
-		let dayInWeek:string = "";
-		let days:number[] = getOperationDay(route);
-		for(i=0; i<days.length; i++)
-		{
-			dayInWeek = dayInWeek+nameOfDay(days[i])+", ";
+		let i: number;
+		let dayInWeek: string = "";
+		const days: number[] = getOperationDay(route);
+		for (i = 0; i < days.length; i++) {
+			dayInWeek = dayInWeek + nameOfDay(days[i]) + ", ";
 		}
 		console.log(dayInWeek);
 		// @ts-ignore
 		return "The route " + line + " operates every " + dayInWeek +
-			"from " + getOperationHour(route)[0] + " to " + getOperationHour(route)[1]+".";
-	} else
+			"from " + getOperationHour(route)[0] + " to " + getOperationHour(route)[1] + ".";
+	} else {
 		return dontTrackThatRoute();
+	}
 }
 
-function stopHour(stop:string): string
-{
-	let i:number;	//loops
-	let j:number;	// inner loop
-	let answer = "Buses go to stop "+ stop + " every ";	// to return
-	let routes = routesToStop(stop);	//array of String route name
+function stopHour(stop: string): string {
 
-	if(!routes) 	// undefined?
-	{
-		return "No routes goes through stop "+ stop + ".";
-	}
+	let answer: string = "Buses go to stop " + stop + " every ";	// to return
+	const routes: string[] | undefined = routesToStop(stop);	//array of String route name
 
-	for(i=0;i<routes.length; i++) // loop through all routes that go through the stop
+	if (!routes) return "No routes goes through stop " + stop + ".";
+
+	for (let i: number = 0; i < routes.length; i++) // loop through all routes that go through the stop
 	{
-		let stops = getStopsFromBusRoute(getBusRouteForInput(routes[i]));
-		for(j=0; j<stops.length; i++)	// loop through each stop of that route, string
+		const stops: string[] = getStopsFromBusRoute(getBusRouteForInput(routes[i]));
+		for (let j: number = 0; j < stops.length; i++)	// loop through each stop of that route, string
 		{
-			if(stops[j].toLowerCase()===stop.toLowerCase())	// stop matched
+			if (stops[j].toLowerCase() === stop.toLowerCase())	// stop matched
 			{
-				// @ts-ignore
-				let time:number[] =  Object.values(Object.values(getBusRouteForInput(routes[i]))[2])[j];
-				answer = answer.concat(time.join(", "));
+
+				const route: BusRoute | undefined = getBusRouteForInput()
+				const time: number[] = getBusRouteForInput(routes[i])?[2][j];
+				answer += time.join(", ");
 			}
 		}
 		answer = answer.concat(" minutes every hour from " + getOperationHour(getBusRouteForInput(routes[i]))[0] +
@@ -268,27 +173,27 @@ function stopHour(stop:string): string
 	}
 	return answer;
 }
+
 /**
  * list all commands or tell how to do so
  * @param switcher
  */
-function printHelp(switcher:boolean):string
-{
+function printHelp(switcher: boolean): string {
 	let words: string;
-	if(switcher)
-	{
+	if (switcher) {
 		words = "Here are a list of available commands for shuttle schedule:\n" +
 			"\"!shuttle route *_name of route_*\" : list all stops of this shuttle line\n" +
 			"\"!shuttle stop *_name of stop_*\" : list Route(s) going through said stop\n" +
 			"\"!shuttle hour *_name of route_*\" : hour of operation for said Route\n" +
 			"\"!shuttle time *_name of stop_*\" : time of day each shuttle line goes through said stop";
-	} else
-		words ="For a list of available commands for shuttle schedule related function:\n" +
-			"Please use the following command: *!shuttle help*"
+	} else {
+		words = "For a list of available commands for shuttle schedule related function:\n" +
+			"Please use the following command: *!shuttle help*";
+	}
 	return words;
 }
-(async (): Promise<void> =>
-	{
+
+(async (): Promise<void> => {
 
 		// const bot: KBBot = await KBBot.init("blizzard_t_husky", "./blizzard_paper_key",
 		// 	{
@@ -306,7 +211,7 @@ function printHelp(switcher:boolean):string
 				debugging: true,
 				hostname: "bot-blizzard-ZD"
 			}
-		)
+		);
 
 
 		bot.command(
@@ -314,8 +219,7 @@ function printHelp(switcher:boolean):string
 				name: "shuttle",
 				description: "check shuttle",
 				usage: "!shuttle route City Commuter",
-				handler: async (msg: KBMessage, res: KBResponse): Promise<void> =>
-				{
+				handler: async (msg: KBMessage, res: KBResponse): Promise<void> => {
 
 					const params: (string | number)[] = msg.getParameters();
 					// const location: string = params.join(" ");
@@ -333,49 +237,41 @@ function printHelp(switcher:boolean):string
 					// 	await res.send("The route goes through the following stops: \n"+getStopsFromBusRoute(route).join("-->")+ ".");
 					// }
 
-					if(params.length>1)		// check valid length of command
+					if (params.length > 1)		// check valid length of command
 					{
-						if(typeof params[0]==="string")		//check string command
+						if (typeof params[0] === "string")		//check string command
 						{
-							let wordsToReturn:string = "what now?";
-							let location = params.slice(1,params.length).join(" ");
-							console.log("location is: "+location);
+							let wordsToReturn: string = "what now?";
+							let location = params.slice(1, params.length).join(" ");
+							console.log("location is: " + location);
 							// params[0] = params.toString().toLowerCase();
-							if(params[0] ==="route")
-							{
+							if (params[0] === "route") {
 								console.log("I read route.");
 								wordsToReturn = getStops(location);
-							}else
-							if(params[0] === "stop")
-							{
+							} else if (params[0] === "stop") {
 								console.log("I read stop.");
 								wordsToReturn = routeFromStop(location);
-							}else
-							if (params[0] === "hour")
-							{
+							} else if (params[0] === "hour") {
 								console.log("I read hour.");
 								wordsToReturn = busHour(location);
-							} else
-							if(params[0] === "time")
-							{
+							} else if (params[0] === "time") {
 								console.log("I read time.");
 								wordsToReturn = stopHour(location);
-							}else
-							if(params[0] === "help")
-							{
+							} else if (params[0] === "help") {
 								console.log("I read help.");
 								return await res.send(printHelp(true));
-							} else
-								wordsToReturn = "Whoops! Sorry not sure I can help that "+printHelp(false);
+							} else {
+								wordsToReturn = "Whoops! Sorry not sure I can help that " + printHelp(false);
+							}
 
 							await res.send(wordsToReturn);
-						}else
-						{
-							await res.send("Please only use string as command. "+printHelp(false));
+						} else {
+							await res.send("Please only use string as command. " + printHelp(false));
 						}
 					} else	// not enough command arguments
-						await res.send("Whoops! Sorry not sure I can help that "+printHelp(true))
-
+					{
+						await res.send("Whoops! Sorry not sure I can help that " + printHelp(true));
+					}
 
 
 					// if(input.length>0)	// input contains actual command
@@ -401,5 +297,6 @@ function printHelp(switcher:boolean):string
 		bot.start();
 	}
 )()
-	.then((): void => {})
+	.then((): void => {
+	})
 	.catch((err: any): void => console.error(err));
